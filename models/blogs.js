@@ -32,8 +32,7 @@ const blogSchema = new mongoose.Schema({
         type: Date,
     },
     effectiveDate: {
-        type: Date,
-        default: Date.now
+        type: Date
     },
     state: {
         type: String,
@@ -59,6 +58,13 @@ const blogSchema = new mongoose.Schema({
 })
 
 blogSchema.pre('save', function (next) {
+    if (!this.effectiveDate) {
+        if (!this.publishedAt) {
+            this.effectiveDate = this.createdAt
+        } else {
+            this.effectiveDate = this.publishedAt
+        }
+    }
     this.updatedAt = new Date(); 
     next();
 });
