@@ -28,26 +28,10 @@ const getAll = async (currentUserId, requestedUserId) => {
         }
     }
     
-    
     console.log("final query: ", query)
-    const blogs = await blogModel.aggregate([
-        { $match: query },
-        {
-            $addFields: {
-                effectiveDate: { $ifNull: ["$publishedAt", "$createdAt"] } // Create a new field
-            }
-        },
-        { $sort: { effectiveDate: -1 } },
-        {
-            $lookup: { // Your populate logic using $lookup
-                from: "users", // Collection to join with
-                localField: "user_id", // Field from the blogs collection
-                foreignField: "_id", // Field from the users collection
-                as: "user_id" // Output array field
-            }
-        },
-        { $unwind: "$user_id" }
-    ]).exec()
+    const blogs = await blogModel.find(query)
+        .populate(["user_id"])
+        .sort(({effectiveDate: -1}))
     return blogs
 }
 
@@ -277,6 +261,7 @@ const publish = async (postId, userId) => {
 
     post.state = 'public'
     post.publishedAt = new Date()
+    post.effectiveDate = post.publishedAt
     post.save()
     return {
         id: post._id,
