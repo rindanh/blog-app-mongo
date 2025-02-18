@@ -22,8 +22,26 @@ const userSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid email address!`
         }
     },
-    password: { type: String, required: true },
+    password: { 
+        type: String, 
+        required: true
+    },
     profilePicture: { type: String }
+}, {
+    toJSON: {
+        transform: function (doc, ret) {
+            delete ret.password
+            delete ret.__v
+            return ret
+        }
+    },
+    toObject: {
+        transform: function (doc, ret) {
+            delete ret.password
+            delete ret.__v
+            return ret
+        }
+    }
 })
 
 
