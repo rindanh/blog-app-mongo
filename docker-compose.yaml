@@ -1,0 +1,12 @@
+version: "3.9"  # Or your preferred version
+services:
+  mongo:
+    image: mongo
+    container_name: mymongo
+    ports:
+      - "27017:27017" # Host:Container
+    volumes:  # If you have persistent storage
+      - mongodata:/data/db
+
+volumes:
+  mongodata:  # Named volume for persistent data
